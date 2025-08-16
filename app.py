@@ -45,5 +45,5 @@ if st.button("Predict Price"):
         st.warning(f"🏡 Mid-range House! Estimated Price: ₹{prediction:,.2f}")
     else:
         st.error(f"💎 Luxury House! Estimated Price: ₹{prediction:,.2f}")
-    st.balloons()
+    # st.balloons()
 
