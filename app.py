@@ -36,4 +36,15 @@ input_data = input_data[model.feature_names_in_]
 
 if st.button("Predict Price"):
     prediction = model.predict(input_data)[0]
-    st.success(f"🏡 Predicted House Price: ${prediction:,.2f}")
+    # st.success(f"🏡 Predicted House Price: ${prediction:,.2f}")
+    # Example: prediction display in app.py
+
+    if prediction < 50000:
+        st.success(f"💸 Affordable House! Estimated Price: ₹{prediction:,.2f}")
+    elif 50000 <= prediction < 150000:
+        st.warning(f"🏡 Mid-range House! Estimated Price: ₹{prediction:,.2f}")
+    else:
+        st.error(f"💎 Luxury House! Estimated Price: ₹{prediction:,.2f}")
+# Add animation
+    st.balloons()
+
