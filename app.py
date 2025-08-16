@@ -1,20 +1,39 @@
 import streamlit as st
+import pickle
 import pandas as pd
-import joblib
 
-# Load model
-model = joblib.load("house_price_model.pkl")
+# Load model and features
+model = pickle.load(open("model.pkl", "rb"))
+features = pickle.load(open("features.pkl", "rb"))
 
 st.title("🏠 House Price Prediction App")
 
-# Input fields
-sqft = st.number_input("Enter square feet:", min_value=300, max_value=10000, step=50)
-bedrooms = st.number_input("Number of Bedrooms:", min_value=1, max_value=10, step=1)
-bathrooms = st.number_input("Number of Bathrooms:", min_value=1, max_value=10, step=1)
+# Collect inputs from user
+GrLivArea = st.number_input("Above ground living area (sq ft)", min_value=100, step=50)
+BedroomAbvGr = st.number_input("Number of Bedrooms", min_value=0, step=1)
+FullBath = st.number_input("Number of Full Bathrooms", min_value=0, step=1)
+GarageCars = st.number_input("Garage capacity (cars)", min_value=0, step=1)
+GarageArea = st.number_input("Garage area (sq ft)", min_value=0, step=50)
+TotalBsmtSF = st.number_input("Total basement area (sq ft)", min_value=0, step=50)
+YearBuilt = st.number_input("Year Built", min_value=1800, max_value=2025, step=1)
+OverallQual = st.slider("Overall Quality (1-10)", 1, 10, 5)
+KitchenQual = st.selectbox("Kitchen Quality", ["Ex", "Gd", "TA", "Fa"])  # categorical
+LotArea = st.number_input("Lot Area (sq ft)", min_value=500, step=100)
 
-# Predict button
+# Put all inputs in dataframe
+input_data = pd.DataFrame([[
+    GrLivArea, BedroomAbvGr, FullBath, GarageCars, GarageArea,
+    TotalBsmtSF, YearBuilt, OverallQual, KitchenQual, LotArea
+]], columns=features)
+
+# Convert categorical to dummies
+input_data = pd.get_dummies(input_data)
+# Align with training features
+for col in model.feature_names_in_:
+    if col not in input_data.columns:
+        input_data[col] = 0
+input_data = input_data[model.feature_names_in_]
+
 if st.button("Predict Price"):
-    input_data = pd.DataFrame([[sqft, bedrooms, bathrooms]],
-                              columns=["sqft", "bedrooms", "bathrooms"])
-    prediction = model.predict(input_data)
-    st.success(f"Estimated House Price: ₹{prediction[0]:,.2f}")
+    prediction = model.predict(input_data)[0]
+    st.success(f"🏡 Predicted House Price: ${prediction:,.2f}")
