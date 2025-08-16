@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 
 # Load model and features
-model = pickle.load(open("model.pkl", "rb"))
+model = pickle.load(open("house_price_model.pkl", "rb"))
 features = pickle.load(open("features.pkl", "rb"))
 
 st.title("🏠 House Price Prediction App")
